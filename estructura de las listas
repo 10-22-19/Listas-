@@ -1,0 +1,385 @@
+1 comenzamos con la estructura de la actvidad splash 
+//en esta parte nosostros estamos indicando cuanto tiempo la pantalla de splash permanecera en la pantalla de inicio ,como lo pressentamos en el codigo mas adelante esta pantalla 
+durara 5 segundos //
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
+import android.os.Bundle;
+
+public class splash extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_splash);
+
+        Thread myThereat =new Thread(){
+            @Override
+            public void run(){
+                try {
+                    sleep(5000);     
+                    Intent intent =new Intent(getApplicationContext(),MainActivity.class);
+                    startActivity(intent);
+                }catch (InterruptedException e){
+                    e.printStackTrace();
+                }
+            }
+        };
+        myThereat.start();
+    }
+    }
+
+    2 segundo paso 
+//en esta segunda activity estamos registrando las acciones que seran realizadas por los botones mas que nada a donde van conectados cada boton// 
+
+package com.example.listasfinales3;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+    }  
+    public void cambio (View view)  //en esta linea estamos creando el nombre del onclick realizado //
+    {
+        Intent intent =new Intent(this,Listasimple.class); //aqui procedemos a ligarlo con nuestro activity llamado lista simple//
+        startActivity(intent);
+    }
+
+    public void cambio2 (View view)  "como en el paso anterior aqui decimos que esta nombrado por cambio 2//
+    {
+        Intent intent =new Intent(this,Listacircular.class); //este nuevo esta ligado con nuestra activity listacircular
+        startActivity(intent);
+    }
+      public void cambio3 (View view)  "aqui decimos que esta nombreado como cambio3//
+    {
+        Intent intent =new Intent(this,ListaDL.class); //este nuevo esta ligado con nuestra activity listaDL
+        startActivity(intent);
+    }
+
+    public void cambio4 (View view) //a este onclik le pondremos el nombre cambio4 //
+    {
+        Intent intent =new Intent(this,menu2.class); //ESTE BOTON ESTA LIGADO CON EL MENU 2 QUE SERIA EL DE LOS METODOS DE ORDENAMIENTO
+        startActivity(intent);
+    }
+
+}
+
+
+3 paso -como tercer paso empezamos con el primer codigo de la lista simple 
+package com.example.listasfinales3;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class Listasimple extends AppCompatActivity {
+
+    private EditText editText;
+    private Button addButton;
+    private TextView textView;
+    private StringBuilder dataBuilder;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_listasimple);
+
+        // en estas lineas estamos configurando la interfaz del usuario 
+        editText = findViewById(R.id.editText);
+        addButton = findViewById(R.id.btnAdd);
+        textView = findViewById(R.id.textView);
+        dataBuilder = new StringBuilder();
+
+        // en estas lineas estamos configurando el boton presentado en la parte grafica que es agregar 
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                //En esta siguiente linea estamos obteniendo el dato ingresado por el usuario 
+                String data = editText.getText().toString();
+                if (!data.isEmpty()) {
+                
+                    dataBuilder.append(data).append("\n");
+
+                    // En esta linea estamos actualizando el TextView
+                    textView.setText(dataBuilder.toString());
+
+                    // procedemos en esta linea a limpiar el textview
+                    editText.setText("");
+                }
+            }
+        });
+    }
+}
+
+paso 4- como paso 4 volvemos al menu y ahora nos vamos con el codigo de la lista doblemente ligada 
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    // En esta clase comenzamos creando la clase llamada node en la que enfocaremos el programa 
+    private static class Node {
+        int data;
+        Node next;
+        Node prev;
+
+        Node(int data) {
+            this.data = data;
+            this.next = null;
+            this.prev = null;
+        }
+    }
+
+    private Node head; // este Nodo tiene la funcionaidad de ser la princoipal de la lista doblemente ligada
+
+    private EditText editTextData;
+    private Button addButton;
+    private TextView displayTextView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        editTextData = findViewById(R.id.editTextData);
+        addButton = findViewById(R.id.addButton);
+        displayTextView = findViewById(R.id.displayTextView);
+
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addDataToList();
+            }
+        });
+    }
+
+    private void addDataToList() {
+        String dataText = editTextData.getText().toString();
+        if (!dataText.isEmpty()) {
+            int data = Integer.parseInt(dataText);
+
+            // en estas lineas lo que estamos haciendo es agregando o guardando el dato ingresado por el usuario en el nodo ya creado 
+            Node newNode = new Node(data);
+
+            // con esta linea estamos agregando el nodo a la lista doblemente ligada 
+            if (head == null) {
+                // La lista está vacía
+                head = newNode;
+            } else {
+                // La lista no está vacía, agregar el nuevo nodo al final
+                Node current = head;
+                while (current.next != null) {
+                    current = current.next;
+                }
+                current.next = newNode;
+                newNode.prev = current;
+            }
+
+            // Actualizar el TextView para mostrar los datos en la lista
+            updateDisplayTextView();
+        }
+    }
+
+    private void updateDisplayTextView() {
+        StringBuilder stringBuilder = new StringBuilder("Datos: ");
+        Node current = head;
+        while (current != null) {
+            stringBuilder.append(current.data).append(", ");
+            current = current.next;
+        }
+        displayTextView.setText(stringBuilder.toString());
+    }
+}
+
+
+paso 5- volvemos al menu y vamos con la siguiente lista que sera la lista circular 
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    // Como en el codigo anterior en este paso estamos creando la clase del codigo llamada node 
+    private static class Node {
+        int data;
+        Node next;
+
+        Node(int data) {
+            this.data = data;
+            this.next = null;
+        }
+    }
+
+    private Node head; // Nodo inicio de la lista circular
+    private Node tail; // Nodo final de la lista circular
+
+    private EditText editTextData;
+    private Button addButton;
+    private TextView displayTextView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        editTextData = findViewById(R.id.editTextData);
+        addButton = findViewById(R.id.addButton);
+        displayTextView = findViewById(R.id.displayTextView);
+
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addDataToList();
+            }
+        });
+    }
+
+    private void addDataToList() {
+        String dataText = editTextData.getText().toString();
+        if (!dataText.isEmpty()) {
+            int data = Integer.parseInt(dataText);
+
+            // En estas linea estamos creando un nuevo nodo con el dato ingresado por el usuario  
+            Node newNode = new Node(data);
+
+            // Agregamos el nuevo nodo a la lista circular
+            if (head == null) {
+                // en este caso estamos diciendo que la lista esta vacia va ejecutar eso 
+                head = newNode;
+                tail = newNode;
+                newNode.next = head; // estamos indicando que el nodo apuntara a si mismo 
+            } else {
+                // si la lista no esta vacia agregara el nodo al final de la lista indicada 
+                tail.next = newNode;
+                tail = newNode;
+                tail.next = head; // estamos logrando que el ultimo nodo pueda apuntar al primero de la lista 
+            }
+
+            // Actualizar el TextView para mostrar los datos en la lista
+            updateDisplayTextView();
+            // Limpiar el EditText después de agregar un dato
+            editTextData.setText("");
+        }
+    }
+
+    private void updateDisplayTextView() {
+        StringBuilder stringBuilder = new StringBuilder("Datos: ");
+        Node current = head;
+        do {
+            stringBuilder.append(current.data).append(", ");
+            current = current.next;
+        } while (current != head);
+
+        displayTextView.setText(stringBuilder.toString());
+    }
+}
+
+
+paso 6 en este paso veremos el metodo de ordenamieto 
+en este paso entra la parte antes vista que es cuando se ligaron los botones a las actividades en este caso este boton esta ligado al menu 2 donde tenemos 2 opciones que es el metodo burbuja 
+y el metodo wittsoft 
+
+empezamos con el codigo del metodo burbuja donde estamos mostrando que el usuario ingrese el dato a la pantalla y esta haga su funcion adelate el codigo.
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.Arrays;
+
+public class MainActivity extends AppCompatActivity {
+
+    private int[] dataArray = new int[0]; // funcion para agregar los datos 
+
+    private EditText editTextNumber;
+    private Button sortButton;
+    private TextView displayTextView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        editTextNumber = findViewById(R.id.editTextNumber);
+        sortButton = findViewById(R.id.sortButton);
+        displayTextView = findViewById(R.id.displayTextView);
+
+        sortButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sortData();
+            }
+        });
+    }
+
+    private void sortData() {
+        // aqui estamos agregando el dato ingresado por el usuario para poder utiliazarlo depues 
+        String numberText = editTextNumber.getText().toString();
+        if (!numberText.isEmpty()) {
+            int number = Integer.parseInt(numberText);
+
+            // en estas lineas estamos agregando el numero 
+            dataArray = Arrays.copyOf(dataArray, dataArray.length + 1);
+            dataArray[dataArray.length - 1] = number;
+
+            // aqui se aplicara el metodo burbuja para asi poder ordenar la lsta 
+            bubbleSort();
+
+            // aqui nos permitira cargar de nuevo la pantalla donde se muestran los datos pero en este caso ya ordenados como se solicita 
+            updateDisplayTextView();
+        }
+    }
+
+    private void bubbleSort() {
+        int n = dataArray.length;
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                if (dataArray[j] > dataArray[j + 1]) {
+                    // en esta linea identificara si estan acomodados n un orden incorrecto y efectuara el cambio de lugar 
+                    int temp = dataArray[j];
+                    dataArray[j] = dataArray[j + 1];
+                    dataArray[j + 1] = temp;
+                }
+            }
+        }
+    }
+
+    private void updateDisplayTextView() {
+        StringBuilder stringBuilder = new StringBuilder("Datos ordenados: ");
+        for (int number : dataArray) {
+            stringBuilder.append(number).append(", ");
+        }
+        displayTextView.setText(stringBuilder.toString());
+    }
+}
+
+
